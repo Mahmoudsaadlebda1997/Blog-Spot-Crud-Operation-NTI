@@ -58,7 +58,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             if (move_uploaded_file($imageTemPath, $disPath)) {
     
                 echo 'Image Uploaded <br>';
-                // echo $blogdate; 
             } else {
                 echo 'Error Try Again';
             }
@@ -84,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
          # DB OP ......... 
 
         //  $sql = "insert into users (title,content,image,date) values ('$title','$content','$disPath','$date')";
-         $sql = "insert into blogs (title,content,image,blogdate) values ('$title','$content','$disPath','$blogdate')";
+         $sql = "insert into blogs (title,content,image,blogdate) values ('$title','$content','$FinalName','$blogdate')";
 
 
         $op =  mysqli_query($con,$sql);

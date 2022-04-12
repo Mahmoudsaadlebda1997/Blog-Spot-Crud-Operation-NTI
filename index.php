@@ -86,7 +86,7 @@
        ?>
             <tr>
                    <td><?php echo $raw['id'];?></td>
-                   <td><?php echo '<img src="'.$raw['image'].'" alt="HTML5 Icon" style="width:200px;height:92px text-align:center; margin-left:90px;">';?></td>
+                   <td><?php echo '<img src="uploads/'.$raw['image'].'" alt="HTML5 Icon" style="width:200px;height:92px text-align:center; margin-left:90px;">';?></td>
                    <td><?php echo $raw['title'];?></td>
                    <td><?php echo $raw['content'];?></td>
                    <td><?php echo $raw['blogdate'];?></td>

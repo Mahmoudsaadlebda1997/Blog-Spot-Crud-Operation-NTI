@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
     $errors = [];
         #validate date
-    if (!empty($blogdate)) {
+    if (empty($blogdate)) {
             $errors['date'] = "Date  Required";
     }
     else if (checkdate($test_arr[0], $test_arr[1], $test_arr[2])) {
@@ -43,37 +43,19 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     } elseif (strlen($content) > 50) {
         $errors['content'] = "Length Must be smaller than 50 chars";
     }
-    if (!empty($_FILES['image']['name'])) {
-    
-        $imageName    = $_FILES['image']['name'];
-        $imageTemPath = $_FILES['image']['tmp_name'];
-        $imageSize    = $_FILES['image']['size'];
-        $imageType    = $_FILES['image']['type'];
-    
-        $typesInfo  =  explode('/', $imageType);    
-        $extension  =  strtolower(end($typesInfo));      
-        $allowedType = ['png','jpg','jpeg'];  
-    
-        if (in_array($extension, $allowedType)) {
-    
-            # Create Final Name ... 
-            $FinalName = time() . rand() . '.' . $extension;
-    
-            $disPath = 'uploads/' . $FinalName;
-    
-            if (move_uploaded_file($imageTemPath, $disPath)) {
-    
-                echo 'Image Uploaded <br>';
-            } else {
-                echo 'Error Try Again';
-            }
-        }else{
-            echo 'InValid Extension';
-        }
-    } else {
-        $errors['Image']= "Required";
-    }
 
+   
+        $typesInfo  =  explode('/', $_FILES['image']['type']);   // convert string to array ... 
+        $extension  =  strtolower(end($typesInfo));      // get last element in array .... 
+
+        $allowedExtension = ['png', 'jpeg', 'jpg'];   // allowed Extension    // PNG JPG 
+
+        if (!in_array($extension, $allowedExtension)) {
+
+            $errors['Image'] = "Invalid Extension";
+        }
+    
+    
 
     # Check ...... 
     if (count($errors) > 0) {
@@ -87,8 +69,24 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     } else {
 
          # DB OP ......... 
+        // Check if Image exist remove old and add new if not keep the old
 
-         $sql = "update blogs set title='$title' , content = '$content' , image = '$disPath' , blogdate='$blogdate' where  id = $id";
+        if (!empty($_FILES['image']['name'])) {
+            $typesInfo  =  explode('/', $_FILES['image']['type']);   // convert string to array ... 
+            $extension  =  strtolower(end($typesInfo));      // get last element in array .... 
+            $allowedExtension = ['png', 'jpeg', 'jpg'];   // allowed Extension    // PNG JPG 
+            $FinalName = time() . rand() . '.' . $extension;
+            $disPath = 'uploads/' . $FinalName;
+            $imageTemPath = $_FILES['image']['tmp_name'];
+            if (move_uploaded_file($imageTemPath, $disPath)) {
+    
+                unlink('uploads/'.$data['image']);
+            } else {
+                $data['image'] = $FinalName;
+            }
+        }
+
+         $sql = "update blogs set title='$title' , content = '$content' , image = '$FinalName' , blogdate='$blogdate' where  id = $id";
 
         $op =  mysqli_query($con, $sql);
 
